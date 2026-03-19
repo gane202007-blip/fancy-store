@@ -22,4 +22,4 @@ default:Date.now
 
 });
 
-module.exports = mongoose.model("Order",orderSchema);
+module.exports = mongoose.model("order",orderSchema);
