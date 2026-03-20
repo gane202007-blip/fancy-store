@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>Admin Dashboard</h1>
+<div style="padding:40px"></div>
+<h3>Add Product</h3>
+
+<input id="name" placeholder="Name"><br><br>
+<input id="price" placeholder="Price"><br><br>
+<input id="category" placeholder="Category"><br><br>
+<input id="image" placeholder="Image URL"><br><br>
+
+<button onclick="addProduct()">Add Product</button>
+
+<h3>Products</h3>
+
+<div id="products"></div>
+
+<script>
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+
+/* PROTECT ADMIN PAGE */
+if(!token || role !== "admin"){
+alert("Please login as admin ❌");
+localStorage.clear();
+window.location.href="login.html";
+}
+
+const API = "https://fancy-store.onrender.com/api/products";
+
+/* LOAD PRODUCTS */
+async function loadProducts(){
+
+const res = await fetch(API);
+const data = await res.json();
+
+const container = document.getElementById("products");
+container.innerHTML="";
+
+data.forEach(p=>{
+
+container.innerHTML+=`
+
+<div>
+<b>${p.name}</b> - $${p.price}
+
+<button onclick="deleteProduct('${p._id}')">Delete</button>
+</div>
+
+`;
+
+});
+
+}
+
+/* ADD PRODUCT */
+async function addProduct(){
+
+const token = localStorage.getItem("token");
+
+const product = {
+name:document.getElementById("name").value,
+price:document.getElementById("price").value,
+category:document.getElementById("category").value, // ✅ added
+image:document.getElementById("image").value        // ✅ added
+};
+
+await fetch(API,{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization": token
+},
+body:JSON.stringify(product)
+});
+
+alert("Product Added ✅");
+
+loadProducts(); // ✅ VERY IMPORTANT
+}
+
+/* DELETE PRODUCT */
+async function deleteProduct(id){
+
+const token = localStorage.getItem("token");
+
+await fetch(API+"/"+id,{
+method:"DELETE",
+headers:{
+"Authorization": token
+}
+});
+
+alert("Deleted ✅");
+
+loadProducts(); // ✅ VERY IMPORTANT
+}
+
+/* INITIAL LOAD */
+loadProducts();
+
+</script>
+</body>
+</html>
