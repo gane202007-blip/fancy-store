@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-const Order = require("../models/Order");
+const order = require("../models/Order");
 const {verifyToken} = require("../middleware/auth");
 
 /* CREATE ORDER */
 
 router.post("/", verifyToken, async(req,res)=>{
 
-const order = new Order({
+const order = new order({
 
 user:req.user.id,
 products:req.body.products,
@@ -27,7 +27,7 @@ res.json(order);
 
 router.get("/", verifyToken, async(req,res)=>{
 
-const orders = await Order.find({user:req.user.id});
+const orders = await order.find({user:req.user.id});
 
 res.json(orders);
 
